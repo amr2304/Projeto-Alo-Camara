@@ -57,3 +57,20 @@ O desenvolvimento está dividido em três partes, para permitir trabalho isolado
 | Vereadores | `/vereadores` |
 | Agenda | `/agenda` |
 | Notificações | `/notificacoes` |
+
+## Ambiente de desenvolvimento (VS Code)
+
+Projeto em **PHP + MySQL**. Extensões recomendadas para todo o grupo instalar no Visual Studio Code:
+
+| Extensão | Autor | Finalidade |
+|---|---|---|
+| PHP Intelephense | Ben Mewburn | Autocomplete, navegação e checagem de erros em PHP |
+| PHP Debug | Xdebug (felixfbecker) | Debug passo a passo (breakpoints) via Xdebug |
+| PHP Extension Pack | Felix Becker | Pacote com as extensões essenciais de PHP |
+| SQLTools | Matheus Teixeira | Cliente SQL integrado ao VS Code |
+| SQLTools MySQL/MariaDB Driver | Matheus Teixeira | Driver para o SQLTools conectar no MySQL/MariaDB |
+| MySQL (opcional) | Weijan Chen | Explorer visual de tabelas/dados do banco |
+
+Pré-requisitos fora do VS Code:
+- **PHP** instalado (8.x) e no PATH — para rodar `php -S localhost:8000` localmente
+- **MySQL/MariaDB** rodando localmente (ou XAMPP/Laragon), com o banco criado a partir de `database/schema.sql`
