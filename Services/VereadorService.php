@@ -83,4 +83,13 @@ class VereadorService
     {
         return $this->dao->atualizarIndicadores($id, $notaMedia, $totalAvaliacoes, $taxaResposta, $totalDemandas);
     }
+
+    public function excluir(int $id): bool
+    {
+        if ($this->dao->findById($id) === null) {
+            throw new InvalidArgumentException('Vereador não encontrado.');
+        }
+
+        return $this->dao->delete($id);
+    }
 }
