@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alô Câmara — Painel do Administrador</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="login" id="login">
+  <form class="box" onsubmit="entrar(event)">
+    <div class="brand"><div class="mark">📣</div>Alô Câmara</div>
+    <p class="sub" style="margin-top:8px">Acesso restrito à equipe da Câmara</p>
+    <div class="f"><label>E-mail</label><input id="em" type="email" placeholder="admin@camara.gov.br" required></div>
+    <div class="f"><label>Senha</label><input id="pw" type="password" required></div>
+    <p class="erro" id="login-erro" style="display:none"></p>
+    <button class="btn" style="width:100%" type="submit">Entrar no painel</button>
+  </form>
+</div>
+
+<div class="app" id="app">
+  <aside class="side">
+    <div class="brand"><div class="mark">📣</div><div>Alô Câmara<br><small>Painel administrativo</small></div></div>
+    <button class="nav on" data-v="dash">Dashboard</button>
+    <button class="nav" data-v="prot">Protocolos</button>
+    <button class="nav" data-v="ver">Vereadores</button>
+    <button class="nav" data-v="ag">Agenda</button>
+    <button class="nav" data-v="com">Comunicados</button>
+    <button class="nav" data-v="usr">Usuários</button>
+    <button class="nav" style="margin-top:auto" onclick="sair()">Sair</button>
+  </aside>
+
+  <main class="main">
+    <section class="view on" id="dash">
+      <h1>Dashboard</h1><p class="sub">Resumo das demandas dos cidadãos</p>
+      <div class="stats" id="stats"></div>
+      <div class="grid2">
+        <div class="card"><h3>Protocolos por tipo</h3><div id="byType"></div></div>
+        <div class="card"><h3>Protocolos por bairro</h3><div id="byBairro"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="prot">
+      <h1>Protocolos</h1><p class="sub">Clique em um protocolo para responder ou mudar o status</p>
+      <div class="tools">
+        <input id="q" placeholder="Buscar por número ou assunto" oninput="buscarProtocolos()">
+        <select id="fs" onchange="carregarProtocolos()"><option value="">Todos os status</option><option value="recebido">Recebido</option><option value="em_analise">Em Análise</option><option value="respondido">Respondido</option><option value="finalizado">Finalizado</option></select>
+        <select id="ft" onchange="carregarProtocolos()"><option value="">Todos os tipos</option><option value="solicitacao">Solicitação</option><option value="reclamacao">Reclamação</option><option value="sugestao">Sugestão</option><option value="denuncia">Denúncia</option><option value="elogio">Elogio</option></select>
+      </div>
+      <table><thead><tr><th>Protocolo</th><th>Tipo</th><th>Assunto</th><th>Bairro</th><th>Data</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table>
+    </section>
+
+    <section class="view" id="ver">
+      <h1>Vereadores</h1><p class="sub">Cadastre e edite os representantes</p>
+      <div class="tools"><button class="btn" onclick="formVereador()">+ Novo vereador</button></div>
+      <table><thead><tr><th>Nome</th><th>Partido</th><th>Região</th><th>Nota</th><th></th></tr></thead><tbody id="tv"></tbody></table>
+    </section>
+
+    <section class="view" id="ag">
+      <h1>Agenda</h1><p class="sub">Sessões, comissões e audiências</p>
+      <div class="tools"><button class="btn" onclick="formEvento()">+ Novo evento</button></div>
+      <table><thead><tr><th>Data</th><th>Tipo</th><th>Título</th><th>Local</th><th></th></tr></thead><tbody id="ta"></tbody></table>
+    </section>
+
+    <section class="view" id="com">
+      <h1>Comunicados</h1><p class="sub">Envie uma notificação para os cidadãos</p>
+      <form class="card" style="max-width:560px" onsubmit="enviarComunicado(event)">
+        <div class="f"><label>Título</label><input id="ct" required></div>
+        <div class="f"><label>Público</label>
+          <select id="cp" onchange="document.getElementById('cb-wrap').style.display = this.value ? '' : 'none'">
+            <option value="">Todos os cidadãos</option><option value="bairro">Por bairro</option></select></div>
+        <div class="f" id="cb-wrap" style="display:none"><label>Bairro</label>
+          <select id="cb"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+        <div class="f"><label>Mensagem</label><textarea id="cm" required></textarea></div>
+        <button class="btn" type="submit">Enviar comunicado</button>
+      </form>
+    </section>
+
+    <section class="view" id="usr">
+      <h1>Usuários</h1><p class="sub">Cidadãos cadastrados</p>
+      <table><thead><tr><th>Nome</th><th>E-mail</th><th>Protocolos</th><th>Situação</th><th></th></tr></thead><tbody id="tu"></tbody></table>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="md"><div class="card" id="mc"></div></div>
+<div class="toast" id="ts"></div>
+
+<script src="../api.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

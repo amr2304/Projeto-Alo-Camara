@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alô Câmara — Site do Cidadão</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header id="topo">
+  <div class="header-inner">
+    <div class="brand" onclick="go('home')"><div class="mark">📣</div>Alô Câmara</div>
+    <nav>
+      <div class="navlink" data-nav="home" onclick="go('home')">Início</div>
+      <div class="navlink" data-nav="vereadores" onclick="go('vereadores')">Vereadores</div>
+      <div class="navlink" data-nav="protocolos" onclick="go('protocolos')">Protocolos</div>
+      <div class="navlink" data-nav="agenda" onclick="go('agenda')">Agenda</div>
+      <div class="navlink" data-nav="notif" onclick="go('notif')">Notificações</div>
+    </nav>
+    <div class="header-right">
+      <div class="icon-btn" onclick="go('notif')">🔔<span class="badge-count" id="notif-count" style="display:none"></span></div>
+      <div class="avatar-mini" id="avatar-mini" onclick="go('config')">?</div>
+    </div>
+  </div>
+</header>
+
+<!-- LOGIN / CADASTRO -->
+<div class="page narrow" id="login" style="display:none;padding:0;">
+  <div class="login-outer">
+    <div class="login-card">
+      <div class="logo">📣</div>
+      <h2>Alô Câmara</h2>
+      <p>Sua voz no poder público</p>
+      <button class="oauth" onclick="loginSocial('google')">Continuar com Google</button>
+      <button class="oauth gov" onclick="loginSocial('govbr')">Entrar com GOV.BR</button>
+      <div class="divider">ou</div>
+
+      <form id="form-login" onsubmit="entrar(event)">
+        <div class="field"><label>E-mail</label><input id="login-email" type="email" placeholder="seu@email.com" required></div>
+        <div class="field"><label>Senha</label><input id="login-senha" type="password" placeholder="••••••••" required></div>
+        <button class="btn blue full" type="submit">Entrar</button>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:16px;">Não tem conta? <span class="link" onclick="alternarCadastro(true)">Criar agora</span></p>
+      </form>
+
+      <form id="form-cadastro" style="display:none" onsubmit="cadastrar(event)">
+        <div class="field"><label>Nome completo</label><input id="cad-nome" placeholder="Seu nome" required minlength="3"></div>
+        <div class="field"><label>E-mail</label><input id="cad-email" type="email" placeholder="seu@email.com" required></div>
+        <div class="field"><label>Bairro</label>
+          <select id="cad-bairro"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+        <div class="field"><label>Senha (mínimo 6 caracteres)</label><input id="cad-senha" type="password" placeholder="••••••••" required minlength="6"></div>
+        <button class="btn blue full" type="submit">Criar conta</button>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:16px;">Já tem conta? <span class="link" onclick="alternarCadastro(false)">Entrar</span></p>
+      </form>
+      <p class="msg-erro" id="login-erro" style="display:none"></p>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page" id="home">
+  <div class="hero-banner">
+    <div>
+      <h2>Olá, <span id="home-nome">Cidadão</span></h2>
+      <p>Acompanhe demandas, fale com seu vereador e participe das decisões da sua cidade — tudo em um só lugar.</p>
+    </div>
+    <button class="btn blue" onclick="go('vereadores')">Escolher Vereador</button>
+  </div>
+
+  <p class="section-label">Ações rápidas</p>
+  <div class="actions-grid">
+    <div class="action-card" onclick="novoProtocolo('solicitacao')"><span class="em" style="color:var(--blue);">＋</span><span>Solicitação</span></div>
+    <div class="action-card" onclick="novoProtocolo('reclamacao')"><span class="em" style="color:var(--orange);">⚠️</span><span>Reclamação</span></div>
+    <div class="action-card" onclick="novoProtocolo('sugestao')"><span class="em" style="color:var(--green);">💡</span><span>Sugestão</span></div>
+    <div class="action-card" onclick="novoProtocolo('denuncia')"><span class="em" style="color:var(--red);">⛔</span><span>Denúncia</span></div>
+    <div class="action-card" onclick="novoProtocolo('elogio')"><span class="em" style="color:var(--pink);">👍</span><span>Elogio</span></div>
+    <div class="action-card" onclick="go('protocolos')"><span class="em" style="color:var(--purple);">📋</span><span>Protocolos</span></div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card" onclick="go('minhas')">
+      <div class="ic">📋</div><div><strong>Minhas Solicitações</strong><small>Acompanhe suas demandas</small></div>
+    </div>
+    <div class="info-card" onclick="go('historia')">
+      <div class="ic">🏛️</div><div><strong>História da Câmara</strong><small>Linha do tempo</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- FORMULÁRIOS DE PROTOCOLO -->
+<!-- SOLICITAÇÃO -->
+<div class="page narrow" id="solicitacao">
+  <h1 class="page-title">Solicitação de Serviço</h1>
+  <p class="page-sub">Solicite serviços públicos como reparo de vias, limpeza, etc.</p>
+  <form class="form-card" data-tipo="solicitacao" onsubmit="enviarProtocolo(event)">
+    <p class="vereador-alvo" style="display:none"></p>
+    <div class="field"><label>Assunto</label><input name="assunto" placeholder="Ex: Reparo de calçada" required></div>
+    <div class="two-col">
+      <div class="field"><label>Bairro</label><select name="bairro"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+      <div class="field"><label>Rua, número, referência</label><input name="endereco" placeholder="Rua, número, referência"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea name="descricao" placeholder="Descreva detalhadamente sua solicitação..." required></textarea></div>
+    <p class="hint">Após o envio, você receberá um número de protocolo para acompanhamento.</p>
+    <p class="msg-erro" style="display:none"></p>
+    <button class="btn blue full" type="submit">Enviar Solicitação</button>
+  </form>
+</div>
+
+<!-- RECLAMAÇÃO -->
+<div class="page narrow" id="reclamacao">
+  <h1 class="page-title">Reclamação</h1>
+  <p class="page-sub">Relate um problema para que a Câmara possa acompanhar.</p>
+  <form class="form-card" data-tipo="reclamacao" onsubmit="enviarProtocolo(event)">
+    <p class="vereador-alvo" style="display:none"></p>
+    <div class="two-col">
+      <div class="field"><label>Bairro</label><select name="bairro"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+      <div class="field"><label>Rua, número e referência</label><input name="endereco" placeholder="Rua, número e referência"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea name="descricao" placeholder="Descreva sua reclamação..." required></textarea></div>
+    <p class="msg-erro" style="display:none"></p>
+    <button class="btn orange full" type="submit">Enviar Reclamação</button>
+  </form>
+</div>
+
+<!-- SUGESTÃO -->
+<div class="page narrow" id="sugestao">
+  <h1 class="page-title">Sugestão</h1>
+  <p class="page-sub">Contribua com ideias para melhorar nossa cidade.</p>
+  <form class="form-card" data-tipo="sugestao" onsubmit="enviarProtocolo(event)">
+    <p class="vereador-alvo" style="display:none"></p>
+    <div class="field"><label>Título</label><input name="assunto" placeholder="Ex: Área de lazer" required></div>
+    <div class="two-col">
+      <div class="field"><label>Bairro</label><select name="bairro"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+      <div class="field"><label>Rua, número, referência</label><input name="endereco" placeholder="Rua, número, referência"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea name="descricao" placeholder="Descreva detalhadamente sua sugestão..." required></textarea></div>
+    <p class="hint">Após o envio, você receberá um número de protocolo.</p>
+    <p class="msg-erro" style="display:none"></p>
+    <button class="btn blue full" type="submit">Enviar Sugestão</button>
+  </form>
+</div>
+
+<!-- DENÚNCIA -->
+<div class="page narrow" id="denuncia">
+  <h1 class="page-title">Denúncia</h1>
+  <p class="page-sub">Sua identidade é mantida em sigilo.</p>
+  <form class="form-card" data-tipo="denuncia" onsubmit="enviarProtocolo(event)">
+    <div class="two-col">
+      <div class="field"><label>Bairro</label><select name="bairro"><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+      <div class="field"><label>Local da denúncia</label><input name="endereco" placeholder="Local da denúncia"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea name="descricao" placeholder="Descreva a denúncia..." required></textarea></div>
+    <p class="msg-erro" style="display:none"></p>
+    <button class="btn red full" type="submit">Enviar Denúncia</button>
+  </form>
+</div>
+
+<!-- ELOGIO -->
+<div class="page narrow" id="elogio">
+  <h1 class="page-title">Elogio</h1>
+  <p class="page-sub">Preencha os campos abaixo</p>
+  <form class="form-card" data-tipo="elogio" onsubmit="enviarProtocolo(event)">
+    <div class="two-col">
+      <div class="field"><label>Vereador (opcional)</label><select name="vereador_id" id="elogio-vereador"><option value="">Selecione</option></select></div>
+      <div class="field"><label>Categoria</label>
+        <select name="categoria"><option value="">Selecione</option><option>Atendimento</option><option>Serviço público</option><option>Projeto/Ação</option><option>Outro</option></select></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea name="descricao" placeholder="Descrição" required></textarea></div>
+    <div class="field">
+      <div class="upload-box" onclick="document.getElementById('elogio-arquivo').click()" style="border:1px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;">
+        <strong style="font-size:14px;" id="upload-titulo">Anexar Imagem (opcional)</strong>
+        <p style="font-size:12.5px;color:var(--muted);margin:4px 0 0;" id="upload-sub">Clique para enviar uma foto — PNG, JPG até 10MB</p>
+      </div>
+      <input type="file" id="elogio-arquivo" accept="image/png,image/jpeg" style="display:none" onchange="escolherImagem(this)">
+    </div>
+    <div class="toggle"><div><strong style="font-size:14px;">Localização</strong><br><small style="color:var(--muted);" id="gps-sub">Automático via GPS</small></div>
+      <div class="switch" id="gps-switch" onclick="alternarGps(this)"><div class="dot"></div></div>
+    </div>
+    <p class="msg-erro" style="display:none"></p>
+    <button class="btn pink full" type="submit">Enviar Elogio</button>
+  </form>
+</div>
+
+<!-- PROTOCOLOS -->
+<div class="page" id="protocolos">
+  <h1 class="page-title">Meus Protocolos</h1>
+  <p class="page-sub">Busque e acompanhe todos os seus protocolos.</p>
+  <input class="search-bar search-input" id="busca-protocolos" placeholder="🔍  Buscar por protocolo ou assunto..." oninput="renderProtocolos()">
+  <div class="stats-row" id="stats-protocolos"></div>
+  <div class="cards-list" id="lista-protocolos"></div>
+</div>
+
+<!-- MINHAS SOLICITAÇÕES -->
+<div class="page" id="minhas">
+  <h1 class="page-title">Minhas Solicitações</h1>
+  <p class="page-sub">Acompanhe o andamento das suas demandas</p>
+  <div class="stats-row" id="stats-minhas"></div>
+  <div class="cards-list" id="lista-minhas"></div>
+</div>
+
+<!-- VEREADORES -->
+<div class="page" id="vereadores">
+  <h1 class="page-title">Vereadores</h1>
+  <p class="page-sub">Conheça e entre em contato com seus representantes.</p>
+  <input class="search-bar search-input" id="busca-vereadores" placeholder="🔍  Buscar por nome..." oninput="renderVereadores()">
+  <div class="filter-row" id="filtro-regiao">
+    <div class="chip active" data-regiao="">Todas</div><div class="chip" data-regiao="Centro">Centro</div><div class="chip" data-regiao="Norte">Norte</div>
+    <div class="chip" data-regiao="Sul">Sul</div><div class="chip" data-regiao="Leste">Leste</div><div class="chip" data-regiao="Oeste">Oeste</div>
+  </div>
+  <div class="vereador-grid" id="grid-vereadores"></div>
+</div>
+
+<!-- PERFIL VEREADOR -->
+<div class="page" id="vereador">
+  <h1 class="page-title" id="ver-nome"></h1>
+  <p class="page-sub" id="ver-sub"></p>
+  <div class="profile-layout">
+    <div class="profile-side">
+      <div class="av-big" id="ver-inicial"></div>
+      <h2 id="ver-nome2"></h2>
+      <p id="ver-sub2"></p>
+      <div class="mini-stats">
+        <div class="s"><b id="ver-nota"></b><span>Nota</span></div>
+        <div class="s"><b id="ver-aval"></b><span>Avaliações</span></div>
+        <div class="s"><b id="ver-dem"></b><span>Demandas</span></div>
+      </div>
+      <div class="actions-row" style="justify-content:center;">
+        <div class="pill blue" onclick="novoProtocolo('solicitacao', true)">Solicitação</div>
+        <div class="pill orange" onclick="novoProtocolo('reclamacao', true)">Reclamação</div>
+        <div class="pill pink" onclick="novoProtocolo('elogio', true)">Elogio</div>
+        <div class="pill green" onclick="go('agenda')">Agendar</div>
+      </div>
+      <div style="margin-top:16px;text-align:center;">
+        <small style="color:var(--muted)">Avalie este vereador</small>
+        <div class="estrelas" id="ver-estrelas"></div>
+      </div>
+    </div>
+    <div>
+      <div class="info-box"><h4>Taxa de Resposta</h4><p id="ver-taxa"></p></div>
+      <div class="info-box"><h4>Sobre</h4><p id="ver-bio"></p></div>
+      <div class="info-box"><h4>Contato</h4><p id="ver-contato"></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTÓRIA -->
+<div class="page narrow" id="historia">
+  <h1 class="page-title">História da Câmara</h1>
+  <p class="page-sub">Linha do tempo dos representantes.</p>
+  <div class="timeline" id="linha-historia"></div>
+</div>
+
+<!-- NOTIFICAÇÕES -->
+<div class="page" id="notif">
+  <h1 class="page-title">Notificações</h1>
+  <p class="page-sub" style="display:flex;justify-content:space-between;">
+    <span>Fique por dentro das atualizações</span><span class="link" style="color:var(--blue);cursor:pointer;" onclick="marcarTodasLidas()">Marcar todas como lidas</span>
+  </p>
+  <div class="filter-row" id="filtro-notif"><div class="chip active" data-tipo="">Todas</div><div class="chip" data-tipo="Protocolos">Protocolos</div><div class="chip" data-tipo="Avisos">Avisos</div></div>
+  <div class="notif-list" id="lista-notif"></div>
+</div>
+
+<!-- AGENDA -->
+<div class="page" id="agenda">
+  <h1 class="page-title">Agenda</h1>
+  <p class="page-sub">Sessões e eventos da Câmara</p>
+  <div class="filter-row" id="filtro-agenda"><div class="chip active" data-tipo="">Todos</div><div class="chip" data-tipo="sessao">Sessão</div><div class="chip" data-tipo="comissao">Comissão</div><div class="chip" data-tipo="audiencia">Audiência</div></div>
+  <div class="agenda-list" id="lista-agenda"></div>
+</div>
+
+<!-- CONFIG -->
+<div class="page narrow" id="config">
+  <h1 class="page-title">Configurações</h1>
+  <div class="config-wrap">
+    <div class="profile-banner">
+      <div class="av" id="cfg-inicial">?</div>
+      <div><strong style="display:block;font-size:16px;" id="cfg-nome"></strong><span style="font-size:13px;opacity:.9;" id="cfg-email"></span></div>
+    </div>
+
+    <p class="section-label">Conta</p>
+    <div class="row-card" onclick="alternarPainel('painel-perfil')"><div class="ic">👤</div><div><strong>Editar Perfil</strong><br><small>Alterar informações pessoais</small></div></div>
+    <form class="form-card" id="painel-perfil" style="display:none" onsubmit="salvarPerfil(event)">
+      <div class="field"><label>Nome</label><input name="nome" required minlength="3"></div>
+      <div class="field"><label>Telefone</label><input name="telefone"></div>
+      <div class="field"><label>Bairro</label><select name="bairro"><option value="">—</option><option>Centro</option><option>Norte</option><option>Sul</option><option>Leste</option><option>Oeste</option></select></div>
+      <p class="msg-erro" style="display:none"></p>
+      <button class="btn blue full" type="submit">Salvar</button>
+    </form>
+
+    <div class="row-card" onclick="alternarPainel('painel-senha')"><div class="ic">🔒</div><div><strong>Alterar Senha</strong><br><small>Atualizar senha de acesso</small></div></div>
+    <form class="form-card" id="painel-senha" style="display:none" onsubmit="salvarSenha(event)">
+      <div class="field"><label>Senha atual</label><input name="senha_atual" type="password" required></div>
+      <div class="field"><label>Nova senha (mínimo 6 caracteres)</label><input name="nova_senha" type="password" required minlength="6"></div>
+      <p class="msg-erro" style="display:none"></p>
+      <button class="btn blue full" type="submit">Alterar senha</button>
+    </form>
+
+    <p class="section-label" style="margin-top:28px;">Notificações</p>
+    <div class="toggle"><div><strong style="font-size:14px;">Notificações Push</strong><br><small style="color:var(--muted);">Receber alertas no celular</small></div>
+      <div class="switch" id="pref-push" onclick="alternarPreferencia(this,'notificar_push')"><div class="dot"></div></div></div>
+    <div class="toggle"><div><strong style="font-size:14px;">Notificações por E-mail</strong><br><small style="color:var(--muted);">Receber atualizações no e-mail</small></div>
+      <div class="switch" id="pref-email" onclick="alternarPreferencia(this,'notificar_email')"><div class="dot"></div></div></div>
+    <div class="toggle"><div><strong style="font-size:14px;">Mudanças nos meus protocolos</strong><br><small style="color:var(--muted);">Avisar quando o status mudar</small></div>
+      <div class="switch" id="pref-status" onclick="alternarPreferencia(this,'notificar_mudanca_status')"><div class="dot"></div></div></div>
+    <div class="toggle"><div><strong style="font-size:14px;">Avisos gerais</strong><br><small style="color:var(--muted);">Comunicados e agenda da Câmara</small></div>
+      <div class="switch" id="pref-avisos" onclick="alternarPreferencia(this,'notificar_avisos_gerais')"><div class="dot"></div></div></div>
+
+    <button class="btn full" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);" onclick="sair()">↪ Sair da conta</button>
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:18px;">Prefeitura de Sarandi - Câmara de Vereadores · Versão 1.0.0</p>
+  </div>
+</div>
+
+<footer>Alô Câmara — Prefeitura de Sarandi</footer>
+
+<script src="../api.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
